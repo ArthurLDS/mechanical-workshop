@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, Link, Brand } from 'react-bootstrap';
+import { Navbar, Nav, Link, Brand, Container } from 'react-bootstrap';
+import { BaseScreen } from '../base/base.screen';
 
-class ClientScreen extends Component {
+class ClientScreen extends BaseScreen {
     render() {
         return (
             <div>
