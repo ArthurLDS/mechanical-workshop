@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Navbar, Nav, Link, Brand} from 'react-bootstrap';
+import { Navbar, Nav, Link, Brand } from 'react-bootstrap';
 
 class EmployeeScreen extends Component {
     render() {

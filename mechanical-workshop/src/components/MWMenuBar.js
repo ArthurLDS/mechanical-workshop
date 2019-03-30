@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, Link, Brand } from 'react-bootstrap';
-import { LinkRoute } from 'react-router-dom/Link'
+import { Link as LinkRoute } from 'react-router-dom'
 
 class MWMenuBar extends Component {
     render() {
@@ -15,7 +15,9 @@ class MWMenuBar extends Component {
                         <Nav.Link>
                             <LinkRoute to="/funcionarios">Funcionários</LinkRoute>
                         </Nav.Link>
-                        <Nav.Link href="#home">Serviços</Nav.Link>
+                        <Nav.Link>
+                            <LinkRoute to="/servicos">Serviços</LinkRoute>
+                        </Nav.Link>
                     </Nav>
                 </Navbar>
             </div>
