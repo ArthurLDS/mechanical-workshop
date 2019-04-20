@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, Link, Brand, Container } from 'react-bootstrap';
+import { Col, Container } from 'react-bootstrap';
 
 export class BaseScreen extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
     }
 
@@ -11,7 +11,9 @@ export class BaseScreen extends Component {
         return (
             <div>
                 <Container fluid="true">
-                    {this.props.child}
+                    <div>
+                        {this.props.child}
+                    </div>
                 </Container>
             </div>
         );
