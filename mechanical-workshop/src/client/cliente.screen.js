@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Form, Button, Col, Row, Container } from 'react-bootstrap';
+import { Form, Button, Col, Row, Alert, Container } from 'react-bootstrap';
 import { BaseScreen } from '../base/base.screen';
+import ClientService from '../service/client/clientService'
+import If from '../components/If'
 
 class ClientScreen extends BaseScreen {
 
@@ -17,19 +19,36 @@ class ClientScreen extends BaseScreen {
                 address: "",
                 phone: "",
                 active: true,
-            }
+            },
+            isFormValid: false
         }
+    }
+    
+    componentDidMount(){
+        if (this.props.match.params.id)
+            this.loadClient()
+    }
+
+    loadClient(){
+        let client = ClientService.findOne(this.props.match.params.id)
+        if(client) this.setState({client})
     }
 
     handleChangeClient = (event) => {
         var obj = Object.assign(this.state.client, { [event.target.name]: event.target.value })
-        this.setState({client: obj})
+        this.setState({ client: obj })
     }
 
     onClickSaveForm = (event) => {
         event.preventDefault()
-        console.log(this.state.client)
+        ClientService.save(this.state.client)
+        this.setState({ isFormValid: true }, this.redirectToList())
     }
+
+    redirectToList() {
+        setTimeout(() => this.props.history.push("/clientes"), 1500)
+    }
+
 
     render() {
         return (
@@ -88,11 +107,11 @@ class ClientScreen extends BaseScreen {
                                 </Form.Group>
 
                                 <Form.Group controlId="formBasicChecbox">
-                                    <Form.Check disabled="true" 
+                                    <Form.Check disabled="true"
                                         name="active"
                                         value={this.state.client.active}
                                         onChange={this.handleChangeClient}
-                                        type="checkbox" 
+                                        type="checkbox"
                                         label="Ativo" />
                                 </Form.Group>
                             </Col>
@@ -124,6 +143,11 @@ class ClientScreen extends BaseScreen {
                                 </Form.Group>
                             </Col>
                         </Row>
+                        <If test={this.state.isFormValid}>
+                            <Alert key="alert-success" variant="success">
+                                Cliente salvo com sucesso!
+                            </Alert>
+                        </If>
                         <Button variant="primary" onClick={this.onClickSaveForm} type="submit">
                             Salvar
                         </Button>

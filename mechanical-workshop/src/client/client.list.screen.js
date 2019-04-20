@@ -1,54 +1,95 @@
 import React, { Component } from 'react';
 import { Form, Button, Col, Row, Table } from 'react-bootstrap';
 import { BaseScreen } from '../base/base.screen';
+import { Link as LinkRoute } from 'react-router-dom'
+import ClientService from '../service/client/clientService'
 
 class ClientListScreen extends BaseScreen {
 
     constructor(props) {
         super(props)
         this.state = {
-            clients: [
-                {
-                    active: true,
-                    address: "",
-                    civilStatus: "SOL",
-                    cpf: "03441192036",
-                    dateBirth: "Fri Apr 19 2019 20:02:52",
-                    email: "arthur@gmail.com",
-                    genre: "MAS",
-                    name: "Arthur",
-                    phone: "5199087340",
-                }
-            ]
+            clients: [],
+            isInactives: true,
         }
+    }
+
+    componentDidMount() {
+        this.loadClients()
+    }
+
+    handleChange = async (event) => {
+        await this.setState({ isInactives: event.target.value == "INA" })
+        await this.loadClients(this.state.isInactives)
+    }
+
+    loadClients(isInactives) {
+        let clients = ClientService.findByInactive(isInactives)
+        this.setState({ clients: clients })
+    }
+
+    loadClient(id) {
+        this.props.history.push(`/cliente/${id}`)
+    }
+
+    onClickDeleteClient(id) {
+        ClientService.delete(id)
+        this.loadClients()
     }
 
     render() {
         return (
             <div>
-                <Col>  
-                    <div style={{marginTop: "20px"}}>
-                        <h2 className="float-left">Clientes</h2>
-                        <Button variant="primary" className="float-right">
-                            Novo Cliente
-                        </Button>
+                <Col>
+                    <div style={{ marginTop: "20px" }}>
+                        <h2 className="">Clientes</h2>
+                        <Form.Group controlId="formBasicFilter" className="float-left">
+                            <Form.Label>Situação do Cliente</Form.Label>
+                            <Form.Control as="select"
+                                name="filter"
+                                defaultValue={this.state.isInactives}
+                                onChange={this.handleChange}>
+                                <option value="ATI">Ativo</option>
+                                <option value="INA">Inativo</option>
+                            </Form.Control>
+                        </Form.Group>
+                        <LinkRoute to="/cliente">
+                            <Button variant="primary" className="float-right">
+                                Novo Cliente
+                            </Button>
+                        </LinkRoute>
                     </div>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nome</th>
                                 <th>Email</th>
                                 <th>CPF</th>
                                 <th>Telefone</th>
+                                <th>Ativo</th>
+                                <th>Ações</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.clients.map((client) =>
                                 <tr>
+                                    <td onClick={() => this.loadClient(client.id)}
+                                        style={{ cursor: "pointer" }}>
+                                        {client.id}
+                                    </td>
                                     <td>{client.name}</td>
                                     <td>{client.email}</td>
                                     <td>{client.cpf}</td>
                                     <td>{client.phone}</td>
+                                    <td>{client.active ? "Sim" : "Não"}</td>
+                                    <td style={{ width: "10px" }}>
+                                        <Button variant="danger" size="sm"
+                                            onClick={() => this.onClickDeleteClient(client.id)}>
+                                            Excluir
+                                        </Button>
+                                    </td>
                                 </tr>
                             )}
                         </tbody>

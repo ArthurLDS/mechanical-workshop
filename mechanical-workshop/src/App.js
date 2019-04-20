@@ -14,7 +14,7 @@ class App extends Component {
         <MenuBar />
         <Switch>
           <Route path="/" exact={true} component={ClientScreen} />
-          <Route path="/cliente" component={ClientScreen} />
+          <Route path="/cliente/:id?" component={ClientScreen} />
           <Route path="/clientes" component={ClientListScreen} />
           <Route path="/funcionarios" component={EmployeeScreen} />
           <Route path="/servicos" component={OfficeScreen} />
