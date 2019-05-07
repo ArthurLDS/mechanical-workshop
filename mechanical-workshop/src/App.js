@@ -7,6 +7,7 @@ import ClientListScreen from './client/client.list.screen';
 import EmployeeScreen from './employee/employee.screen';
 import EmployeeListScreen from './employee/employee.list.screen';
 import OfficeScreen from './office/office.screen';
+import OfficeListScreen from './office/office.list.screen';
 
 class App extends Component {
   render() {
@@ -19,7 +20,8 @@ class App extends Component {
           <Route path="/clientes/:id?" component={ClientListScreen} />
           <Route path="/funcionario/:id?" component={EmployeeScreen} />
           <Route path="/funcionarios/:id?" component={EmployeeListScreen} />          
-          <Route path="/servicos/:id?" component={OfficeScreen} />
+          <Route path="/servico/:id?" component={OfficeScreen} />
+          <Route path="/servicos/:id?" component={OfficeListScreen} />
         </Switch>
       </BrowserRouter>
     );

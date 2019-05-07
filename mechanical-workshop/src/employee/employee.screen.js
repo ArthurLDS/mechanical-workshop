@@ -26,7 +26,7 @@ class EmployeeScreen extends BaseScreen {
 
     loadClient(){
         let obj = EmployeeService.findOne(this.props.match.params.id)
-        if(obj) this.setState({obj})
+        if(obj) this.setState({employee: obj})
     }
 
     handleChangeClient = (event) => {
