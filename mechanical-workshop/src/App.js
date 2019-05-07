@@ -5,6 +5,7 @@ import './App.css';
 import ClientScreen from './client/cliente.screen';
 import ClientListScreen from './client/client.list.screen';
 import EmployeeScreen from './employee/employee.screen';
+import EmployeeListScreen from './employee/employee.list.screen';
 import OfficeScreen from './office/office.screen';
 
 class App extends Component {
@@ -15,9 +16,10 @@ class App extends Component {
         <Switch>
           <Route path="/" exact={true} component={ClientScreen} />
           <Route path="/cliente/:id?" component={ClientScreen} />
-          <Route path="/clientes" component={ClientListScreen} />
-          <Route path="/funcionarios" component={EmployeeScreen} />
-          <Route path="/servicos" component={OfficeScreen} />
+          <Route path="/clientes/:id?" component={ClientListScreen} />
+          <Route path="/funcionario/:id?" component={EmployeeScreen} />
+          <Route path="/funcionarios/:id?" component={EmployeeListScreen} />          
+          <Route path="/servicos/:id?" component={OfficeScreen} />
         </Switch>
       </BrowserRouter>
     );
