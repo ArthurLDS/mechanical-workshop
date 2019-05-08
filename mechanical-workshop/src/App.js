@@ -8,6 +8,8 @@ import EmployeeScreen from './employee/employee.screen';
 import EmployeeListScreen from './employee/employee.list.screen';
 import OfficeScreen from './office/office.screen';
 import OfficeListScreen from './office/office.list.screen';
+import ScheduleScreen from './schedule/schedule.screen';
+import ScheduleListScreen from './schedule/schedule.list.screen';
 
 class App extends Component {
   render() {
@@ -22,6 +24,8 @@ class App extends Component {
           <Route path="/funcionarios/:id?" component={EmployeeListScreen} />          
           <Route path="/servico/:id?" component={OfficeScreen} />
           <Route path="/servicos/:id?" component={OfficeListScreen} />
+          <Route path="/agendamento/:id?" component={ScheduleScreen} />
+          <Route path="/agendamentos/:id?" component={ScheduleListScreen} />
         </Switch>
       </BrowserRouter>
     );

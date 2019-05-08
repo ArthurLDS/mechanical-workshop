@@ -18,6 +18,9 @@ class MWMenuBar extends Component {
                         <Nav.Link>
                             <LinkRoute to="/servicos">Serviços</LinkRoute>
                         </Nav.Link>
+                        <Nav.Link>
+                            <LinkRoute to="/agendamentos">Agendamentos</LinkRoute>
+                        </Nav.Link>
                     </Nav>
                 </Navbar>
             </div>
