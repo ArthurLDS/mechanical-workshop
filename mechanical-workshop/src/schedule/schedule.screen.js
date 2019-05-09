@@ -14,11 +14,12 @@ class ScheduleScreen extends BaseScreen {
             schedule: {
                 hour: "",
                 date: new Date(),
-                profissional: {},
-                client: {},
-                office: {},
+                client: 1,
+                office: 1,
+                employee: 1,
                 active: true,
             },
+            hours: [],
             clients: [],
             employees: [],
             offices: [],
@@ -26,7 +27,7 @@ class ScheduleScreen extends BaseScreen {
         }
     }
 
-    async componentDidMount() {
+    async componentWillMount() {
         if (this.props.match.params.id)
             this.loadOffice()
 
@@ -35,21 +36,41 @@ class ScheduleScreen extends BaseScreen {
         await this.loadOffices()
     }
 
+    componentDidMount() {
+        this.loadHours()
+    }
+
     loadOffice() {
         let obj = ScheduleService.findOne(this.props.match.params.id)
         if (obj) this.setState({ schedule: obj })
     }
 
-    handleChangeSchedule = (event) => {
+    handleChangeSchedule = async (event) => {
         console.log("VALUE: ", event.target.value);
+        console.log("NAME : ", event.target.name)
+        if(event.target.name === "employee"){
+            console.log("opa")
+            this.loadHours();
+        }
         var obj = Object.assign(this.state.schedule, { [event.target.name]: event.target.value })
-        this.setState({ office: obj })
+        this.setState({ schedule: obj })
     }
 
     onClickSaveForm = (event) => {
+        let schedule = this.state.schedule;
         event.preventDefault()
-        ScheduleService.save(this.state.schedule)
+        this.updateSchedulesEmployee(schedule)
+        ScheduleService.save(schedule)
         this.setState({ isFormValid: true }, this.redirectToList())
+    }
+
+    updateSchedulesEmployee(schedule) {
+        console.log("updateSchedulesEmployee", schedule)
+        let employee = EmployeeService.findOne(schedule.office)
+        let schedules = employee["schedules"] = employee.schedules ? employee.schedules : []
+        console.log("Schedules employee", schedules);
+        schedules.push(schedule)
+        EmployeeService.save(employee)
     }
 
     async loadClients() {
@@ -64,8 +85,18 @@ class ScheduleScreen extends BaseScreen {
         await this.setState({ offices: OfficeService.findAll() })
     }
 
+    async loadHours() {
+        let employee = EmployeeService.findOne(this.state.schedule.employee)
+        let result = ScheduleService.getListHoursByEmployee(employee)
+        await this.setState({hours: result})
+    }
+
     redirectToList() {
         setTimeout(() => this.props.history.push("/agendamentos"), 1500)
+    }
+
+    formatHour(hour){
+        return `${hour}:00`
     }
 
     render() {
@@ -76,14 +107,16 @@ class ScheduleScreen extends BaseScreen {
                     <Form>
                         <Row>
                             <Col>
-                                <Form.Group controlId="formBasicHour">
-                                    <Form.Label>Horário</Form.Label>
-                                    <Form.Control
-                                        name="hour"
-                                        defaultValue={this.state.schedule.hour}
-                                        onChange={this.handleChangeSchedule}
-                                        type="text"
-                                        placeholder="Digite uma horário" />
+                                <Form.Group controlId="formBasicEmployee">
+                                    <Form.Label>Funcionário</Form.Label>
+                                    <Form.Control as="select"
+                                        name="employee"
+                                        defaultValue={1}
+                                        onChange={this.handleChangeSchedule}>
+                                        {this.state.employees.map((employee) =>
+                                            <option value={employee.id}>{employee.name}</option>
+                                        )}
+                                    </Form.Control>
                                 </Form.Group>
                                 <Form.Group controlId="formBasicDate">
                                     <Form.Label>Data</Form.Label>
@@ -93,11 +126,24 @@ class ScheduleScreen extends BaseScreen {
                                         onChange={this.handleChangeSchedule}
                                         type="date" />
                                 </Form.Group>
+
+                                <Form.Group controlId="formBasicHour">
+                                    <Form.Label>Horário</Form.Label>
+                                    <Form.Control as="select"
+                                        name="hour"
+                                        defaultValue={this.state.hours[0]}
+                                        onChange={this.handleChangeSchedule}>
+                                        {this.state.hours.map((hour) =>
+                                            <option value={hour}>{this.formatHour(hour)}</option>
+                                        )}
+                                    </Form.Control>
+                                </Form.Group>
+
                                 <Form.Group controlId="formBasicClient">
                                     <Form.Label>Cliente</Form.Label>
                                     <Form.Control as="select"
                                         name="client"
-                                        defaultValue={this.state.clients[0]}
+                                        defaultValue={1}
                                         onChange={this.handleChangeSchedule}>
                                         {this.state.clients.map((client) =>
                                             <option value={client.id}>{client.name}</option>
@@ -108,24 +154,14 @@ class ScheduleScreen extends BaseScreen {
                                     <Form.Label>Serviço</Form.Label>
                                     <Form.Control as="select"
                                         name="office"
-                                        defaultValue={this.state.offices[0]}
+                                        defaultValue={1}
                                         onChange={this.handleChangeSchedule}>
                                         {this.state.offices.map((office) =>
                                             <option value={office.id}>{office.description}</option>
                                         )}
                                     </Form.Control>
                                 </Form.Group>
-                                <Form.Group controlId="formBasicEmployee">
-                                    <Form.Label>Funcionário</Form.Label>
-                                    <Form.Control as="select"
-                                        name="employee"
-                                        defaultValue={this.state.employees[0]}
-                                        onChange={this.handleChangeSchedule}>
-                                        {this.state.employees.map((employee) =>
-                                            <option value={employee.id}>{employee.name}</option>
-                                        )}
-                                    </Form.Control>
-                                </Form.Group>
+                                
 
                             </Col>
                         </Row>

@@ -40,6 +40,30 @@ class ScheduleService {
         return listIds[0] ? lastId + 1 : 1
     }
 
+    static getListHoursByEmployee(employee) {
+        let allHours = this.generateListHours(8, 12, 2).concat(this.generateListHours(14, 18, 2))
+        console.log("AQUI", employee.schedules);
+        if(employee.schedules != null && employee.schedules.length > 0){
+            let scheduleHours = employee.schedules.map(s => parseInt(s.hour.substr(0,2)))
+            console.log(scheduleHours)
+            scheduleHours.forEach(s => {
+                let index = allHours.indexOf(s);
+                if (index > -1) {
+                    allHours.splice(index, 1);
+                }
+            })
+        }
+        return allHours
+    }
+
+    static generateListHours(init, final, interval) {
+        let result = []
+        for (let i = init; i <= final; i = i + interval) {
+            result.push(i);
+        }
+        return result;
+    }
+
 }
 
 export default ScheduleService

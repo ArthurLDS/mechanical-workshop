@@ -3,6 +3,7 @@ import { Form, Button, Col, Row, Table } from 'react-bootstrap';
 import { BaseScreen } from '../base/base.screen';
 import { Link as LinkRoute } from 'react-router-dom'
 import ScheduleService from '../service/schedule/scheduleService'
+import EmployeeService from '../service/employee/employeeService'
 
 class ScheduleListScreen extends BaseScreen {
 
@@ -38,6 +39,20 @@ class ScheduleListScreen extends BaseScreen {
         this.loadSchedules()
     }
 
+    formatHour(hour) {
+        return `${hour}:00`
+    }
+
+    formatDate(inputFormat) {
+        function pad(s) { return (s < 10) ? '0' + s : s; }
+        var d = new Date(inputFormat);
+        return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join('/');
+    }
+
+    loadEmployee(id) {
+        return EmployeeService.findOne(id)
+    }
+
     render() {
         return (
             <div>
@@ -64,8 +79,9 @@ class ScheduleListScreen extends BaseScreen {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Data</th>
                                 <th>Horário</th>
+                                <th>Data</th>
+                                <th>Funcionário</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -76,8 +92,9 @@ class ScheduleListScreen extends BaseScreen {
                                         style={{ cursor: "pointer" }}>
                                         {schedule.id}
                                     </td>
-                                    <td>{schedule.hour}</td>
-                                    <td>{schedule.date}</td>
+                                    <td>{this.formatHour(schedule.hour)}</td>
+                                    <td>{this.formatDate(schedule.date)}</td>
+                                    <td>{this.loadEmployee(schedule.employee).name}</td>
                                     <td style={{ width: "10px" }}>
                                         <Button variant="danger" size="sm"
                                             onClick={() => this.onClickDeleteSchedule(schedule.id)}>

@@ -55,7 +55,7 @@ class EmployeeListScreen extends BaseScreen {
                         </Form.Group>
                         <LinkRoute to="/funcionario">
                             <Button variant="primary" className="float-right">
-                                Novo Cliente
+                                Novo Funcionário
                             </Button>
                         </LinkRoute>
                     </div>
