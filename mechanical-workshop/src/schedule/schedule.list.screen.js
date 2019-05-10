@@ -4,6 +4,7 @@ import { BaseScreen } from '../base/base.screen';
 import { Link as LinkRoute } from 'react-router-dom'
 import ScheduleService from '../service/schedule/scheduleService'
 import EmployeeService from '../service/employee/employeeService'
+import ClientService from '../service/client/clientService'
 
 class ScheduleListScreen extends BaseScreen {
 
@@ -12,7 +13,14 @@ class ScheduleListScreen extends BaseScreen {
         this.state = {
             schedules: [],
             isInactives: true,
+            filterDate: "",
+            filterClient: "",
+            clients: [{name: ""}],
         }
+    }
+
+    async componentWillMount(){
+        await this.loadClients()
     }
 
     componentDidMount() {
@@ -20,12 +28,12 @@ class ScheduleListScreen extends BaseScreen {
     }
 
     handleChange = async (event) => {
-        await this.setState({ isInactives: event.target.value == "INA" })
-        await this.loadSchedules(this.state.isInactives)
+        await this.setState({ [event.target.name]: event.target.value })
+        await this.loadSchedules(this.state.filterDate, this.state.filterClient)
     }
 
-    loadSchedules(isInactives) {
-        let schedules = ScheduleService.findByInactive(isInactives)
+    loadSchedules(filterDate, filterClient) {
+        let schedules = ScheduleService.findByDateAndClient(filterDate, filterClient)
         console.log("agendamentos: ", schedules);
         this.setState({ schedules: schedules })
     }
@@ -53,27 +61,53 @@ class ScheduleListScreen extends BaseScreen {
         return EmployeeService.findOne(id)
     }
 
+    loadClient(id) {
+        return ClientService.findOne(id)
+    }
+
+    async loadClients() {
+        let clients = ClientService.findAll();
+        console.log(clients)
+        await this.setState({ clients: clients })
+    }
+
     render() {
         return (
             <div>
                 <Col>
                     <div style={{ marginTop: "20px" }}>
                         <h2 className="">Agendamentos</h2>
-                        <Form.Group controlId="formBasicFilter" className="float-left">
-                            <Form.Label>Situação</Form.Label>
-                            <Form.Control as="select"
-                                name="filter"
-                                defaultValue={this.state.isInactives}
-                                onChange={this.handleChange}>
-                                <option value="ATI">Ativo</option>
-                                <option value="INA">Inativo</option>
-                            </Form.Control>
-                        </Form.Group>
+
+                        <Row>
+                            <Form.Group controlId="formFilterDate" className="col-md-4">
+                                <Form.Label>Data do agendamento</Form.Label>
+                                <Form.Control
+                                    name="filterDate"
+                                    id="filterDate"
+                                    value={this.state.filterDate}
+                                    onChange={this.handleChange}
+                                    type="date" />
+                            </Form.Group>
+
+                            <Form.Group controlId="formFilterClient" className="col-md-4">
+                                <Form.Label>Cliente</Form.Label>
+                                <Form.Control as="select"
+                                    name="filterClient"
+                                    defaultValue={this.state.filterClient}
+                                    onChange={this.handleChange}>
+                                    <option value={""}>Selecione...</option>
+                                    {this.state.clients.map((client) =>
+                                        <option value={client.id}>{client.name}</option>
+                                    )}
+                                </Form.Control>
+                            </Form.Group>
+                        </Row>
                         <LinkRoute to="/agendamento">
-                            <Button variant="primary" className="float-right">
+                            <Button variant="primary" className="float-right" style={{marginBottom: "15px"}}>
                                 Novo agendamento
                             </Button>
                         </LinkRoute>
+
                     </div>
                     <Table striped bordered hover>
                         <thead>
@@ -81,6 +115,7 @@ class ScheduleListScreen extends BaseScreen {
                                 <th>ID</th>
                                 <th>Horário</th>
                                 <th>Data</th>
+                                <th>Cliente</th>
                                 <th>Funcionário</th>
                                 <th>Ações</th>
                             </tr>
@@ -94,6 +129,7 @@ class ScheduleListScreen extends BaseScreen {
                                     </td>
                                     <td>{this.formatHour(schedule.hour)}</td>
                                     <td>{this.formatDate(schedule.date)}</td>
+                                    <td>{this.loadClient(schedule.client).name}</td>
                                     <td>{this.loadEmployee(schedule.employee).name}</td>
                                     <td style={{ width: "10px" }}>
                                         <Button variant="danger" size="sm"

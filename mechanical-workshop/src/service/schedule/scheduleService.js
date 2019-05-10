@@ -33,6 +33,16 @@ class ScheduleService {
         return list.filter(c => c.active !== inactive)
     }
 
+    static findByDateAndClient(date, client){
+        console.log("date", date)
+        let list = LocalStorageService.getData(prefix_key) || []
+        console.log("list", list)
+        return date 
+            ? list.filter(s => (!date || (new Date(s.date).getDay() == new Date(date).getDay() && new Date(s.date).getMonth() == new Date(date).getMonth()))
+            && (!client || s.client == client))
+            : list
+        }
+
     static getNextId() {
         let listClients = LocalStorageService.getData(prefix_key) || []
         let listIds = listClients.map(c => c.id)
