@@ -12,7 +12,7 @@ class OfficeScreen extends BaseScreen {
                 description: "",
                 active: true,
             },
-            isFormValid: false
+            isFormValid: undefined
         }
     }
 
@@ -33,8 +33,20 @@ class OfficeScreen extends BaseScreen {
 
     onClickSaveForm = (event) => {
         event.preventDefault()
-        OfficeService.save(this.state.office)
-        this.setState({ isFormValid: true }, this.redirectToList())
+        if(this.validate()){
+            OfficeService.save(this.state.office)
+            this.setState({ isFormValid: true }, this.redirectToList())
+        }
+    }
+
+    validate() {
+        let isFormValid = true
+        let valuesForm = Object.values(this.state.office)
+        if (valuesForm.some(v => !v)) {
+            isFormValid = false
+        }
+        this.setState({ isFormValid })
+        return isFormValid
     }
 
     redirectToList() {
@@ -62,6 +74,11 @@ class OfficeScreen extends BaseScreen {
                         <If test={this.state.isFormValid}>
                             <Alert key="alert-success" variant="success">
                                 Serviço salvo com sucesso!
+                            </Alert>
+                        </If>
+                        <If test={this.state.isFormValid === false}>
+                            <Alert key="alert-danger" variant="danger">
+                                Atenção! Preecha todos os campos corretamente antes de prosseguir
                             </Alert>
                         </If>
                         <Button variant="primary" onClick={this.onClickSaveForm} type="submit">

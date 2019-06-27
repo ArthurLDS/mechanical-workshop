@@ -13,17 +13,17 @@ class ScheduleScreen extends BaseScreen {
         this.state = {
             schedule: {
                 hour: "",
-                date: new Date(),
-                client: 1,
-                office: 1,
-                employee: 1,
+                date: "",
+                client: "",
+                office: "",
+                employee: "",
                 active: true,
             },
             hours: [],
             clients: [],
             employees: [],
             offices: [],
-            isFormValid: false
+            isFormValid: undefined
         }
     }
 
@@ -46,10 +46,7 @@ class ScheduleScreen extends BaseScreen {
     }
 
     handleChangeSchedule = async (event) => {
-        console.log("VALUE: ", event.target.value);
-        console.log("NAME : ", event.target.name)
-        if(event.target.name === "employee"){
-            console.log("opa")
+        if (event.target.name === "employee") {
             this.loadHours();
         }
         var obj = Object.assign(this.state.schedule, { [event.target.name]: event.target.value })
@@ -59,9 +56,11 @@ class ScheduleScreen extends BaseScreen {
     onClickSaveForm = (event) => {
         let schedule = this.state.schedule;
         event.preventDefault()
-        this.updateSchedulesEmployee(schedule)
-        ScheduleService.save(schedule)
-        this.setState({ isFormValid: true }, this.redirectToList())
+        if (this.validate()) {
+            this.updateSchedulesEmployee(schedule)
+            ScheduleService.save(schedule)
+            this.setState({ isFormValid: true }, this.redirectToList())
+        }
     }
 
     updateSchedulesEmployee(schedule) {
@@ -88,14 +87,24 @@ class ScheduleScreen extends BaseScreen {
     async loadHours() {
         let employee = EmployeeService.findOne(this.state.schedule.employee)
         let result = ScheduleService.getListHoursByEmployee(employee)
-        await this.setState({hours: result})
+        await this.setState({ hours: result })
+    }
+
+    validate() {
+        let isFormValid = true
+        let valuesForm = Object.values(this.state.schedule)
+        if (valuesForm.some(v => !v)) {
+            isFormValid = false
+        }
+        this.setState({ isFormValid })
+        return isFormValid
     }
 
     redirectToList() {
         setTimeout(() => this.props.history.push("/agendamentos"), 1500)
     }
 
-    formatHour(hour){
+    formatHour(hour) {
         return `${hour}:00`
     }
 
@@ -113,6 +122,7 @@ class ScheduleScreen extends BaseScreen {
                                         name="employee"
                                         defaultValue={1}
                                         onChange={this.handleChangeSchedule}>
+                                            <option value={null}>Selecione..</option>
                                         {this.state.employees.map((employee) =>
                                             <option value={employee.id}>{employee.name}</option>
                                         )}
@@ -133,9 +143,10 @@ class ScheduleScreen extends BaseScreen {
                                         name="hour"
                                         defaultValue={this.state.hours[0]}
                                         onChange={this.handleChangeSchedule}>
+                                            <option value={null}>Selecione..</option>
                                         {this.state.hours.map((hour) =>
                                             <option value={hour}>{this.formatHour(hour)}</option>
-                                        )}
+                                            )}
                                     </Form.Control>
                                 </Form.Group>
 
@@ -143,31 +154,36 @@ class ScheduleScreen extends BaseScreen {
                                     <Form.Label>Cliente</Form.Label>
                                     <Form.Control as="select"
                                         name="client"
-                                        defaultValue={1}
                                         onChange={this.handleChangeSchedule}>
+                                            <option value={null}>Selecione..</option>
                                         {this.state.clients.map((client) =>
                                             <option value={client.id}>{client.name}</option>
-                                        )}
+                                            )}
                                     </Form.Control>
                                 </Form.Group>
                                 <Form.Group controlId="formBasicOffice">
                                     <Form.Label>Serviço</Form.Label>
                                     <Form.Control as="select"
                                         name="office"
-                                        defaultValue={1}
                                         onChange={this.handleChangeSchedule}>
+                                            <option value={null}>Selecione..</option>
                                         {this.state.offices.map((office) =>
                                             <option value={office.id}>{office.description}</option>
                                         )}
                                     </Form.Control>
                                 </Form.Group>
-                                
+
 
                             </Col>
                         </Row>
                         <If test={this.state.isFormValid}>
                             <Alert key="alert-success" variant="success">
                                 Serviço salvo com sucesso!
+                            </Alert>
+                        </If>
+                        <If test={this.state.isFormValid === false}>
+                            <Alert key="alert-danger" variant="danger">
+                                Atenção! Preecha todos os campos corretamente antes de prosseguir
                             </Alert>
                         </If>
                         <Button variant="primary" onClick={this.onClickSaveForm} type="submit">

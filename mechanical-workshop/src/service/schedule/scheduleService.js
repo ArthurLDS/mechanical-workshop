@@ -52,8 +52,7 @@ class ScheduleService {
 
     static getListHoursByEmployee(employee) {
         let allHours = this.generateListHours(8, 12, 2).concat(this.generateListHours(14, 18, 2))
-        console.log("AQUI", employee.schedules);
-        if(employee.schedules != null && employee.schedules.length > 0){
+        if(employee && employee.schedules && employee.schedules.length > 0){
             let scheduleHours = employee.schedules.map(s => parseInt(s.hour.substr(0,2)))
             console.log(scheduleHours)
             scheduleHours.forEach(s => {

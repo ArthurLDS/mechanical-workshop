@@ -15,7 +15,7 @@ class EmployeeScreen extends BaseScreen {
                 phone: "",
                 active: true,
             },
-            isFormValid: false
+            isFormValid: undefined
         }
     }
     
@@ -36,8 +36,20 @@ class EmployeeScreen extends BaseScreen {
 
     onClickSaveForm = (event) => {
         event.preventDefault()
-        EmployeeService.save(this.state.employee)
-        this.setState({ isFormValid: true }, this.redirectToList())
+        if(this.validate()){
+            EmployeeService.save(this.state.employee)
+            this.setState({ isFormValid: true }, this.redirectToList())
+        }
+    }
+    
+    validate() {
+        let isFormValid = true
+        let valuesForm = Object.values(this.state.employee)
+        if (valuesForm.some(v => !v)) {
+            isFormValid = false
+        }
+        this.setState({ isFormValid })
+        return isFormValid
     }
 
     redirectToList() {
@@ -103,6 +115,11 @@ class EmployeeScreen extends BaseScreen {
                         <If test={this.state.isFormValid}>
                             <Alert key="alert-success" variant="success">
                                 Funcionário salvo com sucesso!
+                            </Alert>
+                        </If>
+                        <If test={this.state.isFormValid === false}>
+                            <Alert key="alert-danger" variant="danger">
+                                Atenção! Preecha todos os campos corretamente antes de prosseguir
                             </Alert>
                         </If>
                         <Button variant="primary" onClick={this.onClickSaveForm} type="submit">

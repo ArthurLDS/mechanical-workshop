@@ -12,7 +12,7 @@ class ClientScreen extends BaseScreen {
             client: {
                 name: "",
                 cpf: "",
-                dateBirth: new Date(),
+                dateBirth: "",
                 genre: "MAS",
                 civilStatus: "SOL",
                 email: "",
@@ -20,18 +20,18 @@ class ClientScreen extends BaseScreen {
                 phone: "",
                 active: true,
             },
-            isFormValid: false
+            isFormValid: undefined
         }
     }
-    
-    componentDidMount(){
+
+    componentDidMount() {
         if (this.props.match.params.id)
             this.loadClient()
     }
 
-    loadClient(){
+    loadClient() {
         let client = ClientService.findOne(this.props.match.params.id)
-        if(client) this.setState({client})
+        if (client) this.setState({ client })
     }
 
     handleChangeClient = (event) => {
@@ -41,8 +41,20 @@ class ClientScreen extends BaseScreen {
 
     onClickSaveForm = (event) => {
         event.preventDefault()
-        ClientService.save(this.state.client)
-        this.setState({ isFormValid: true }, this.redirectToList())
+        if (this.validate()) {
+            ClientService.save(this.state.client)
+            this.setState({ isFormValid: true }, this.redirectToList())
+        }
+    }
+
+    validate() {
+        let isFormValid = true
+        let valuesForm = Object.values(this.state.client)
+        if (valuesForm.some(v => !v)) {
+            isFormValid = false
+        }
+        this.setState({ isFormValid })
+        return isFormValid
     }
 
     redirectToList() {
@@ -146,6 +158,11 @@ class ClientScreen extends BaseScreen {
                         <If test={this.state.isFormValid}>
                             <Alert key="alert-success" variant="success">
                                 Cliente salvo com sucesso!
+                            </Alert>
+                        </If>
+                        <If test={this.state.isFormValid === false}>
+                            <Alert key="alert-danger" variant="danger">
+                                Atenção! Preecha todos os campos corretamente antes de prosseguir
                             </Alert>
                         </If>
                         <Button variant="primary" onClick={this.onClickSaveForm} type="submit">
