@@ -3,6 +3,7 @@ import { Form, Button, Col, Row, Alert, Container } from 'react-bootstrap';
 import { BaseScreen } from '../base/base.screen';
 import ClientService from '../service/client/clientService'
 import If from '../components/If'
+import MasksService from '../utils/masks'
 
 class ClientScreen extends BaseScreen {
 
@@ -37,6 +38,14 @@ class ClientScreen extends BaseScreen {
     handleChangeClient = (event) => {
         var obj = Object.assign(this.state.client, { [event.target.name]: event.target.value })
         this.setState({ client: obj })
+    }
+
+    formatPhone = (event) => {
+        event.target.value = MasksService.formatPhone(event.target.value)
+    }
+
+    formatCpf = (event) => {
+        event.target.value = MasksService.formatCPF(event.target.value)
     }
 
     onClickSaveForm = (event) => {
@@ -84,6 +93,7 @@ class ClientScreen extends BaseScreen {
                                     <Form.Control
                                         name="cpf"
                                         defaultValue={this.state.client.cpf}
+                                        onKeyPress={this.formatCpf}
                                         onChange={this.handleChangeClient}
                                         type="text" placeholder="Digite seu CPF" />
                                 </Form.Group>
@@ -149,9 +159,10 @@ class ClientScreen extends BaseScreen {
                                     <Form.Label>Telefone</Form.Label>
                                     <Form.Control
                                         name="phone"
+                                        onKeyPress={this.formatPhone}
                                         defaultValue={this.state.client.phone}
                                         onChange={this.handleChangeClient}
-                                        type="number" placeholder="Digite seu número de telefone" />
+                                        type="text" placeholder="Digite seu número de telefone" />
                                 </Form.Group>
                             </Col>
                         </Row>
