@@ -3,6 +3,7 @@ import {Form, Button, Col, Row, Alert, Container} from 'react-bootstrap';
 import { BaseScreen } from '../base/base.screen';
 import EmployeeService from '../service/employee/employeeService'
 import If from '../components/If'
+import MasksService from '../utils/masks'
 
 class EmployeeScreen extends BaseScreen {
     constructor(props) {
@@ -41,7 +42,7 @@ class EmployeeScreen extends BaseScreen {
             this.setState({ isFormValid: true }, this.redirectToList())
         }
     }
-    
+
     validate() {
         let isFormValid = true
         let valuesForm = Object.values(this.state.employee)
@@ -52,10 +53,17 @@ class EmployeeScreen extends BaseScreen {
         return isFormValid
     }
 
+    formatPhone = (event) => {
+        event.target.value = MasksService.formatPhone(event.target.value)
+    }
+
+    formatCpf = (event) => {
+        event.target.value = MasksService.formatCPF(event.target.value)
+    }
+
     redirectToList() {
         setTimeout(() => this.props.history.push("/funcionarios"), 1500)
     }
-
 
     render() {
         return (
@@ -79,6 +87,7 @@ class EmployeeScreen extends BaseScreen {
                                     <Form.Control
                                         name="cpf"
                                         defaultValue={this.state.employee.cpf}
+                                        onKeyPress={this.formatCpf}
                                         onChange={this.handleChangeClient}
                                         type="text" placeholder="Digite seu CPF" />
                                 </Form.Group>
@@ -106,9 +115,10 @@ class EmployeeScreen extends BaseScreen {
                                     <Form.Label>Telefone</Form.Label>
                                     <Form.Control
                                         name="phone"
+                                        onKeyPress={this.formatPhone}
                                         defaultValue={this.state.employee.phone}
                                         onChange={this.handleChangeClient}
-                                        type="number" placeholder="Digite seu número de telefone" />
+                                        type="text" placeholder="Digite seu número de telefone" />
                                 </Form.Group>
                             </Col>
                         </Row>
